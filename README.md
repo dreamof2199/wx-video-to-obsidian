@@ -1,5 +1,9 @@
 # wx-video-to-obsidian
 
+> **A manual-trigger pipeline that turns WeChat Channels (视频号) videos into Obsidian notes.** Feed it a Channels share link (or a local `.mp4`) and get back a Markdown note: YAML frontmatter + summary + key points + a cleaned full transcript. Every intermediate step — ASR, OCR, VLM, frame dedup — runs on **local or deterministic inference**; only the final summarization uses a paid AI. Ships in two flavors: a **local macOS build** (zero marginal cost) and a **server build** (Alibaba DashScope + end-to-end-encrypted write into Obsidian LiveSync, triggered over HTTP / DingTalk / WeCom). Docs below are in Chinese.
+
+---
+
 把微信**视频号**视频转成 Obsidian 笔记的手动触发管道。输入一条视频号分享链接（或本地 mp4），输出一则 markdown 笔记：YAML frontmatter + 摘要 + 要点 + 整理后的全文转写。
 
 设计原则：**中间所有节点都是本地推理 / 确定性提取**（ASR、OCR、VLM、抽帧去重），**只有末端做摘要的那一步用付费 AI**。无人声、靠画面轮播的视频也能靠视觉分支兜底。
@@ -37,6 +41,9 @@ brew install ffmpeg jq
 pip install funasr torch torchaudio        # 本地 ASR（首跑拉模型数百 MB）
 # 视觉：装 Ollama 并 `ollama pull qwen3-vl:30b-a3b`；OCR：pip install ocrmac
 
+cp clip.env.example clip.env               # 配置：至少把 VAULT 改成你的 Obsidian 收件夹
+set -a; . ./clip.env; set +a               # 载入配置（也可直接 export 各变量）
+
 clip.sh --doctor                 # 自检依赖 / 下载器 / vault
 clip.sh --file <mp4>             # 主路径：下载器拿到的解密 mp4 → 笔记
 clip.sh <视频号分享链接>          # 快路径（需先部署解析，见 SETUP.md）
@@ -56,6 +63,7 @@ clip.sh <视频号分享链接>          # 快路径（需先部署解析，见 
 
 ```
 clip.sh                  本地版编排入口
+clip.env.example         本地版配置模板（复制为 clip.env，source 后运行）
 asr_sensevoice.py        本地 ASR（SenseVoice）
 asr_dashscope.py         云端 ASR（百炼，备选）
 visual_extract.py        抽帧去重 + OCR + VLM

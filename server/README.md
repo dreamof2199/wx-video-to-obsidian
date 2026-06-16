@@ -83,11 +83,23 @@ systemctl restart clip-server
 
 ## 6. 密钥与配置文件
 
-| 文件 | 内容 | 权限 |
-|---|---|---|
-| `/root/clip-server/clip.env` | SPH_API、DASHSCOPE_API_KEY、CLIP_API_TOKEN、模型、(钉钉) | 600 |
-| `/root/clip-server/sph_cookie.env` | SPH_COOKIE（元宝 cookie） | 600 |
-| `/root/clip-server/osmcp.env` | CouchDB 账号密码 + **E2E passphrase** + VAULT_NAME | 600 |
+仓库只含 `*.env.example` 模板，首次部署逐个复制为 `*.env` 填真实值（`chmod 600`）：
+
+```bash
+cd /root/clip-server
+for f in clip osmcp sph_cookie ding wx; do cp $f.env.example $f.env; done
+chmod 600 *.env
+vim clip.env osmcp.env sph_cookie.env   # 必填；ding.env / wx.env 按需
+```
+
+| 文件（模板） | 内容 | 必填 | 加载方 |
+|---|---|---|---|
+| `clip.env` | DASHSCOPE_API_KEY、CLIP_API_TOKEN、模型、抽帧调参、SPH_API | ✅ | clip-server.service |
+| `sph_cookie.env` | SPH_COOKIE（元宝 cookie，本地解析快路径用） | 用快路径则填 | clip-server.service |
+| `osmcp.env` | CouchDB 账号密码 + **E2E passphrase** + VAULT_NAME | ✅ | obsidian-sync-mcp.service |
+| `ding.env` | 钉钉出站/入站凭据 | 可选 | clip-server.service |
+| `wx.env` | 企业微信自建应用凭据 | 可选 | clip-server.service |
+
 代码里无任何明文密钥。改任何 env 后都要 `systemctl restart` 对应服务。
 
 ## 7. 怎么建钉钉机器人 + webhook
