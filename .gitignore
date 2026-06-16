@@ -1,0 +1,33 @@
+# ---- 密钥/环境变量（绝不提交，只留 *.env.example 模板）----
+*.env
+!*.env.example
+.env
+
+# ---- 下载器二进制 + 其 config.yaml(含 sphCookie) + 数据库 ----
+wx_video_download_*/
+*.db
+
+# ---- 钉钉/企业微信域名验证文件 ----
+WW_verify_*.txt
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# ---- Node ----
+node_modules/
+
+# ---- 模型/大文件缓存 ----
+*.safetensors
+*.gguf
+
+# ---- 系统/编辑器 ----
+.DS_Store
+*.bak
+*.bak.*
+
+# ---- 项目本地 Claude 配置 ----
+.claude/
